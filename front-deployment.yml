@@ -1,0 +1,28 @@
+# front-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telehoot-front
+  namespace: telehoot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telehoot-front
+  template:
+    metadata:
+      labels:
+        app: telehoot-front
+    spec:
+      containers:
+      - name: telehoot-front
+        image: cr.yandex/crp68tl21d259sc3nvna/telehoot-front:latest
+        ports:
+        - containerPort: 5173
+        env:
+        - name: VITE_API
+          value: "https://api.deti-durova.online"
+        - name: VITE_IS_DEV
+          value: "false"
+        - name: VITE_BOT_NAME
+          value: "StalinidzeTestBot"

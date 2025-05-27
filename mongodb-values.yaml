@@ -1,0 +1,42 @@
+# telehoot-mongodb-values.yaml
+global:
+  storageClass: "" # Измените на ваш StorageClass если нужно
+
+architecture: replicaset
+replicaCount: 1
+nameOverride: "telehoot-mongodb"
+fullnameOverride: "telehoot-mongodb"
+
+auth:
+  enabled: true
+  rootUser: "telehoot"
+  rootPassword: "telehoot" # Поменяйте на свой пароль!
+  username: "telehoot1"
+  password: "Telehoot1" # Поменяйте на свой пароль!
+  database: "telehoot"
+  replicaSetKey: "TelehootReplicaKey789!" # Секретный ключ для репликации
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+  limits:
+    cpu: 2000m
+    memory: 1Gi
+
+service:
+  type: ClusterIP
+  port: 27017
+
+
+readinessProbe:
+  initialDelaySeconds: 30  # Увеличиваем для Yandex Cloud
+  periodSeconds: 10
+
+livenessProbe:
+  initialDelaySeconds: 60  # Увеличиваем для Yandex Cloud
+  periodSeconds: 20
+
+
+arbiter:
+  enabled: false

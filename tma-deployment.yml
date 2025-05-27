@@ -1,0 +1,28 @@
+# tma-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telehoot-tma
+  namespace: telehoot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telehoot-tma
+  template:
+    metadata:
+      labels:
+        app: telehoot-tma
+    spec:
+      containers:
+      - name: telehoot-tma
+        image: cr.yandex/crp68tl21d259sc3nvna/telehoot-tma:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: VITE_API
+          value: "https://api.deti-durova.online"
+        - name: VITE_IS_DEV
+          value: "false"
+        - name: VITE_SITE_LINK
+          value: "https://deti-durova.online"

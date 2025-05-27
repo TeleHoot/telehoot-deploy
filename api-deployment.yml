@@ -1,0 +1,95 @@
+# api-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telehoot-api
+  namespace: telehoot
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: telehoot-api
+  template:
+    metadata:
+      labels:
+        app: telehoot-api
+    spec:
+      containers:
+      - name: telehoot-api
+        image: cr.yandex/crp68tl21d259sc3nvna/telehoot-api:latest
+        ports:
+        - containerPort: 8000
+        env:
+        # Основные настройки
+        - name: DEBUG
+          value: "True"
+        - name: PORT
+          value: "8000"
+        
+        # PostgreSQL
+        - name: POSTGRES_DB
+          value: "telehoot"
+        - name: POSTGRES_USER
+          value: "telehoot"
+        - name: POSTGRES_PORT
+          value: "6432"
+        - name: POSTGRES_HOST
+          value: "rc1a-ed7o2lc6brb6ujae.mdb.yandexcloud.net"
+        
+        # Redis
+        - name: REDIS_HOST
+          value: "valkey-redis-master.default.svc.cluster.local"
+        - name: REDIS_PORT
+          value: "6379"
+        
+        # MongoDB
+        - name: MONGO_HOST
+          value: "51.250.89.49"
+        - name: MONGO_PORT
+          value: "27017"
+        - name: MONGO_INITDB_DATABASE
+          value: "telehoot"
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: "telehoot"
+        
+        # S3
+        - name: S3_BUCKET_NAME
+          value: "telehoot"
+        - name: S3_ENDPOINT
+          value: "https://storage.yandexcloud.net"
+        - name: S3_IS_PROXY_REQUIRED
+          value: "False"
+        - name: S3_REQUIRE_TLS
+          value: "True"
+        
+        # Секретные переменные (должны быть созданы через kubectl create secret)
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: telehoot-secrets
+              key: postgres-password
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: telehoot-secrets
+              key: redis-password
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: telehoot-secrets
+              key: mongo-password
+        - name: TG_BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: telehoot-secrets
+              key: tg-bot-token
+        - name: S3_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: telehoot-secrets
+              key: s3-access-key
+        - name: S3_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: telehoot-secrets
+              key: s3-secret-key
